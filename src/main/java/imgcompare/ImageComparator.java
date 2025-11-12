@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class ImageComparator {
-
     public int countDifferentPixels(BufferedImage img1, BufferedImage img2) {
         int width = Math.min(img1.getWidth(), img2.getWidth());
         int height = Math.min(img1.getHeight(), img2.getHeight());

@@ -1,0 +1,18 @@
+package raytracer;
+
+import raytracer.math.Point;
+import raytracer.math.Vector;
+
+public final class Camera {
+    public final Point lookFrom;
+    public final Point lookAt;
+    public final Vector up;      // fourni dans le fichier (pas forcément normalisé)
+    public final double fovDeg;
+
+    public Camera(Point lookFrom, Point lookAt, Vector up, double fovDeg) {
+        this.lookFrom = lookFrom;
+        this.lookAt = lookAt;
+        this.up = up;
+        this.fovDeg = fovDeg;
+    }
+}

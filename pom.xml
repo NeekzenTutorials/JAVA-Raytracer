@@ -78,7 +78,7 @@
             <archive>
               <manifest>
                 <addClasspath>true</addClasspath>
-                <mainClass>imgcompare.Main</mainClass>
+                <mainClass>raytracer.Main</mainClass>
               </manifest>
             </archive>
           </configuration>

@@ -57,6 +57,9 @@ public final class Sphere extends Shape {
             o.y() + d.y() * t,
             o.z() + d.z() * t
         );
-        return Optional.of(new Intersection(t, p, this));
+
+        Vector normal = p.sub(center).normalized();
+
+        return Optional.of(new Intersection(t, p, normal, this));
     }
 }

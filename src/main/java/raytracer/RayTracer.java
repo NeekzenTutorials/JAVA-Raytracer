@@ -2,9 +2,9 @@ package raytracer;
 
 import java.util.Optional;
 
-import raytracer.math.Point;
-import raytracer.math.Vector;
 import raytracer.math.Color;
+import raytracer.math.Vector;
+import raytracer.math.Point;
 
 public final class RayTracer {
     private final Scene scene;
@@ -18,8 +18,7 @@ public final class RayTracer {
 
         int width = scene.getWidth();
         int height = scene.getHeight();
-        double fovDeg = scene.getCamera().getFovDeg();
-        double fovRad = Math.toRadians(fovDeg);
+        double fovRad = Math.toRadians(scene.getCamera().getFovDeg());
 
         this.pixelHeight = 2.0 * Math.tan(fovRad / 2.0) / height;
         this.pixelWidth = pixelHeight * height / width;
@@ -32,7 +31,7 @@ public final class RayTracer {
         Optional<Intersection> hitOpt = scene.findClosestIntersection(ray);
 
         if (hitOpt.isPresent()) {
-            return scene.getAmbient();
+            return scene.shade(hitOpt.get());
         } else {
             return new Color();
         }

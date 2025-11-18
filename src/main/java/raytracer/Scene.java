@@ -51,4 +51,15 @@ public final class Scene {
         }
         return Optional.ofNullable(closest);
     }
+
+    public Color shade(Intersection isect) {
+        Color result = ambient;
+
+        for (AbstractLight light : lights) {
+            Color contrib = isect.lambert(light);
+            result = result.add(contrib);
+        }
+
+        return result;
+    }
 }

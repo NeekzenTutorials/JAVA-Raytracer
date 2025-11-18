@@ -15,7 +15,7 @@ public class Main {
                 scene = new SceneFileParser().parse(p);
             } else {
                 // scène embarquée dans resources
-                String resourcePath = "/jalon2/test1.scene";
+                String resourcePath = "/jalon2/test7.scene";
                 System.out.println("Lecture de la ressource: " + resourcePath);
                 try (InputStream in = Main.class.getResourceAsStream(resourcePath)) {
                     if (in == null) {

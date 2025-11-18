@@ -47,4 +47,36 @@ public final class Intersection {
 
         return lightColor.schur(diffuse).scale(cos);
     }
+
+    public Color blinnPhong(AbstractLight light, Vector eyeDir) {
+        Vector lightDir;
+
+        if (light instanceof DirectionalLight dirLight) {
+            lightDir = dirLight.direction().scale(-1.0).normalized();
+        } else if (light instanceof PointLight pointLight) {
+            lightDir = Vector.fromPoints(position, pointLight.origin()).normalized();
+        } else {
+            return new Color();
+        }
+
+        double cosNL = lightDir.dot(normal);
+        if (cosNL <= 0.0) {
+            return new Color();
+        }
+
+        Vector h = lightDir.add(eyeDir).normalized();
+        double cosNH = Math.max(0.0, h.dot(normal));
+
+        double shininess = shape.getShininess();
+        if (shininess <= 0.0) {
+            return new Color();
+        }
+
+        double specFactor = Math.pow(cosNH, shininess);
+
+        Color lightColor = light.color();
+        Color specColor = shape.getSpecular();
+
+        return lightColor.schur(specColor).scale(specFactor);
+    }
 }

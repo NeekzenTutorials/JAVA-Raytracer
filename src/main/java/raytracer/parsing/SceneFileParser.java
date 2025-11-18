@@ -34,6 +34,7 @@ public final class SceneFileParser {
 
         Color currentDiffuse = new Color(0,0,0);
         Color currentSpecular = new Color(0,0,0);
+        double currentShininess = 0.0;
         int maxverts = -1;
         var vertices = new ArrayList<Point>();
         double sumLr = 0, sumLg = 0, sumLb = 0;
@@ -96,6 +97,10 @@ public final class SceneFileParser {
                             requireArgs(t, 4, lineNo);
                             currentSpecular = new Color(d(t[1]), d(t[2]), d(t[3]));
                         }
+                        case "shininess" -> {
+                            requireArgs(t, 2, lineNo);
+                            currentShininess = d(t[1]);
+                        }
                         case "directional" -> {
                             requireArgs(t, 7, lineNo);
                             var dir = new Vector(d(t[1]), d(t[2]), d(t[3]));
@@ -126,6 +131,7 @@ public final class SceneFileParser {
                             // appliquer les dernières couleurs
                             s.setDiffuse(currentDiffuse);
                             s.setSpecular(currentSpecular);
+                            s.setShininess(currentShininess);
                             scene.addShape(s);
                         }
                         case "plane" -> {
@@ -135,6 +141,7 @@ public final class SceneFileParser {
                             var s = new Plane(p, n);
                             s.setDiffuse(currentDiffuse);
                             s.setSpecular(currentSpecular);
+                            s.setShininess(currentShininess);
                             scene.addShape(s);
                         }
                         case "maxverts" -> {
@@ -161,6 +168,7 @@ public final class SceneFileParser {
                             var tri = new Triangle(vertices.get(a), vertices.get(b), vertices.get(c));
                             tri.setDiffuse(currentDiffuse);
                             tri.setSpecular(currentSpecular);
+                            tri.setShininess(currentShininess);
                             scene.addShape(tri);
                         }
                         default -> throw err(lineNo, "Mot-clé inconnu: " + key);

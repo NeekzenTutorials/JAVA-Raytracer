@@ -31,7 +31,7 @@ public final class RayTracer {
         Optional<Intersection> hitOpt = scene.findClosestIntersection(ray);
 
         if (hitOpt.isPresent()) {
-            return scene.shade(hitOpt.get());
+            return scene.shade(hitOpt.get(), ray);
         } else {
             return new Color();
         }

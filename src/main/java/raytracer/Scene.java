@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 import raytracer.math.Color;
+import raytracer.math.Point;
+import raytracer.math.Vector;
 import raytracer.light.AbstractLight;
+import raytracer.light.DirectionalLight;
+import raytracer.light.PointLight;
 import raytracer.shape.Shape;
 
 public final class Scene {
@@ -52,14 +56,53 @@ public final class Scene {
         return Optional.ofNullable(closest);
     }
 
-    public Color shade(Intersection isect) {
+    public Color shade(Intersection isect, Ray viewRay) {
         Color result = ambient;
+        Vector eyeDir = viewRay.direction().scale(-1.0).normalized();
 
         for (AbstractLight light : lights) {
-            Color contrib = isect.lambert(light);
-            result = result.add(contrib);
+            if (isInShadow(isect, light)) {
+                continue;
+            }
+
+            Color diffuseTerm = isect.lambert(light);
+            Color specularTerm = isect.blinnPhong(light, eyeDir);
+
+            result = result.add(diffuseTerm).add(specularTerm);
         }
 
         return result;
+    }
+
+    private boolean isInShadow(Intersection isect, AbstractLight light) {
+        Vector lightDir;
+        double maxT = Double.POSITIVE_INFINITY;
+
+        if (light instanceof DirectionalLight dirLight) {
+            lightDir = dirLight.direction().scale(-1.0).normalized();
+        } else if (light instanceof PointLight pointLight) {
+            Vector toLight = Vector.fromPoints(isect.position(), pointLight.origin());
+            maxT = toLight.length();
+            lightDir = toLight.normalized();
+        } else {
+            return false;
+        }
+
+        double eps = 1e-4;
+        Point origin = isect.position().add(isect.normal().scale(eps));
+
+        Ray shadowRay = new Ray(origin, lightDir);
+
+        for (Shape s : shapes) {
+            Optional<Intersection> hitOpt = s.intersect(shadowRay);
+            if (hitOpt.isPresent()) {
+                double t = hitOpt.get().t();
+                if (t > eps && t < maxT - eps) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

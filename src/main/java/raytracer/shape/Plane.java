@@ -1,5 +1,9 @@
 package raytracer.shape;
 
+import java.util.Optional;
+
+import raytracer.Intersection;
+import raytracer.Ray;
 import raytracer.math.Point;
 import raytracer.math.Vector;
 
@@ -14,4 +18,10 @@ public final class Plane extends Shape {
 
     public Point point() { return point; }
     public Vector normal() { return normal; }
+
+    @Override
+    public Optional<Intersection> intersect(Ray ray) {
+        // TODO: implémenter l’intersection rayon-plan plus tard.
+        return Optional.empty();
+    }
 }

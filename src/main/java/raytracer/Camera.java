@@ -15,4 +15,20 @@ public final class Camera {
         this.up = up;
         this.fovDeg = fovDeg;
     }
+
+    public Point getLookFrom() {
+        return lookFrom;
+    }
+
+    public Point getLookAt() {
+        return lookAt;
+    }
+
+    public Vector getUp() {
+        return up;
+    }
+
+    public double getFovDeg() {
+        return fovDeg;
+    }
 }

@@ -1,32 +1,38 @@
 package raytracer;
 
 import java.io.InputStream;
+import java.awt.image.BufferedImage;
 import raytracer.parsing.SceneFileParser;
+
 public class Main {
     public static void main(String[] args) {
         try {
             Scene scene;
+
             if (args.length > 0) {
-                // Chemin fichier système si tu passes un chemin réel
-                scene = new SceneFileParser().parse(java.nio.file.Path.of(args[0]));
+                // chemin externe
+                java.nio.file.Path p = java.nio.file.Path.of(args[0]);
+                scene = new SceneFileParser().parse(p);
             } else {
-                // Lecture depuis le classpath (dans le JAR)
-                String resourcePath = "/jalon2/test6.scene";
+                // scène embarquée dans resources
+                String resourcePath = "/jalon2/test1.scene";
+                System.out.println("Lecture de la ressource: " + resourcePath);
                 try (InputStream in = Main.class.getResourceAsStream(resourcePath)) {
                     if (in == null) {
-                        throw new IllegalArgumentException("Ressource introuvable dans le classpath: " + resourcePath);
+                        throw new IllegalArgumentException("Ressource introuvable: " + resourcePath);
                     }
-                    System.out.println("Lecture de la ressource: " + resourcePath);
                     scene = new SceneFileParser().parse(in, resourcePath);
                 }
             }
 
-            System.out.println("Taille: " + scene.getWidth() + "x" + scene.getHeight());
-            System.out.println("Output: " + scene.getOutput());
-            System.out.println("Shapes: " + scene.getShapes().size());
-            System.out.println("Lights: " + scene.getLights().size());
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            RayTracer rayTracer = new RayTracer(scene);
+            Renderer renderer = new Renderer(rayTracer);
+
+            BufferedImage img = renderer.render();
+            renderer.save(img, scene.getOutput());
+
+        } catch (Exception e) {
+            e.printStackTrace();
             System.exit(1);
         }
     }

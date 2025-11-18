@@ -2,6 +2,7 @@ package raytracer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import raytracer.math.Color;
 import raytracer.light.AbstractLight;
@@ -16,7 +17,6 @@ public final class Scene {
     private final List<AbstractLight> lights = new ArrayList<>();
     private final List<Shape> shapes = new ArrayList<>();
 
-    // Getters/Setters
     public int getWidth() { return width; }
     public void setWidth(int width) { this.width = width; }
     public int getHeight() { return height; }
@@ -36,4 +36,19 @@ public final class Scene {
 
     public void addLight(AbstractLight l) { lights.add(l); }
     public void addShape(Shape s) { shapes.add(s); }
+
+    public Optional<Intersection> findClosestIntersection(Ray ray) {
+        Intersection closest = null;
+
+        for (Shape shape : shapes) {
+            var hitOpt = shape.intersect(ray);
+            if (hitOpt.isPresent()) {
+                Intersection hit = hitOpt.get();
+                if (closest == null || hit.t() < closest.t()) {
+                    closest = hit;
+                }
+            }
+        }
+        return Optional.ofNullable(closest);
+    }
 }

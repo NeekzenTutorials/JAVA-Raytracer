@@ -1,5 +1,9 @@
 package raytracer.shape;
 
+import java.util.Optional;
+
+import raytracer.Intersection;
+import raytracer.Ray;
 import raytracer.math.Color;
 
 public abstract class Shape {
@@ -11,4 +15,6 @@ public abstract class Shape {
 
     public Color getSpecular() { return specular; }
     public void setSpecular(Color specular) { this.specular = specular; }
+
+    public abstract Optional<Intersection> intersect(Ray ray);
 }

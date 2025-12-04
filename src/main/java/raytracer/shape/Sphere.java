@@ -19,47 +19,48 @@ public final class Sphere extends Shape {
     public Point center() { return center; }
     public double radius() { return radius; }
 
+    @Override
     public Optional<Intersection> intersect(Ray ray) {
-        Point o = ray.origin();
-        Vector d = ray.direction();
+        Point origin = ray.origin();
+        Vector direction = ray.direction();
 
-        Vector oc = o.sub(center);
+        Vector originToCenterVector = origin.sub(center);
 
-        double a = d.dot(d);
-        double b = 2.0 * oc.dot(d);
-        double c = oc.dot(oc) - radius * radius;
+        double quadraticA = direction.dot(direction);
+        double quadraticB = 2.0 * originToCenterVector.dot(direction);
+        double quadraticC = originToCenterVector.dot(originToCenterVector) - radius * radius;
 
-        double discriminant = b*b - 4*a*c;
+        double discriminant = quadraticB * quadraticB - 4 * quadraticA * quadraticC;
         if (discriminant < 0.0) {
             return Optional.empty();
         }
 
-        double sqrtD = Math.sqrt(discriminant);
-        double inv2a = 1.0 / (2.0 * a);
+        double sqrtDiscriminant = Math.sqrt(discriminant);
+        double inverseTwoA = 1.0 / (2.0 * quadraticA);
 
-        double t1 = (-b - sqrtD) * inv2a;
-        double t2 = (-b + sqrtD) * inv2a;
+        double t1 = (-quadraticB - sqrtDiscriminant) * inverseTwoA;
+        double t2 = (-quadraticB + sqrtDiscriminant) * inverseTwoA;
 
-        double eps = 1e-6;
-        double t;
-        if (t1 > eps && t2 > eps) {
-            t = Math.min(t1, t2);
-        } else if (t1 > eps) {
-            t = t1;
-        } else if (t2 > eps) {
-            t = t2;
+        double epsilon = 1e-6;
+        double distanceIntersection;
+        if (t1 > epsilon && t2 > epsilon) {
+            distanceIntersection = Math.min(t1, t2);
+        } else if (t1 > epsilon) {
+            distanceIntersection = t1;
+        } else if (t2 > epsilon) {
+            distanceIntersection = t2;
         } else {
             return Optional.empty();
         }
 
-        Point p = new Point(
-            o.x() + d.x() * t,
-            o.y() + d.y() * t,
-            o.z() + d.z() * t
+        Point intersectionPoint = new Point(
+            origin.x() + direction.x() * distanceIntersection,
+            origin.y() + direction.y() * distanceIntersection,
+            origin.z() + direction.z() * distanceIntersection
         );
 
-        Vector normal = p.sub(center).normalized();
+        Vector normalVector = intersectionPoint.sub(center).normalized();
 
-        return Optional.of(new Intersection(t, p, normal, this));
+        return Optional.of(new Intersection(distanceIntersection, intersectionPoint, normalVector, this));
     }
 }

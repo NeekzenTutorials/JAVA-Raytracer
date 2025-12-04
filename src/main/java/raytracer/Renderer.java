@@ -17,31 +17,31 @@ public final class Renderer {
 
     public BufferedImage render() {
         Scene scene = rayTracer.getScene();
-        int width = scene.getWidth();
-        int height = scene.getHeight();
+        int imageWidth = scene.getWidth();
+        int imageHeight = scene.getHeight();
 
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
-        for (int j = 0; j < height; j++) {
-            for (int i = 0; i < width; i++) {
-                Color c = rayTracer.getPixelColor(i, j);
-                int rgb = c.toRGB();
+        for (int pixelY = 0; pixelY < imageHeight; pixelY++) {
+            for (int pixelX = 0; pixelX < imageWidth; pixelX++) {
+                Color pixelColor = rayTracer.getPixelColor(pixelX, pixelY);
+                int rgb = pixelColor.toRGB();
 
-                int yImage = height - 1 - j;
-                img.setRGB(i, yImage, rgb);
+                int flippedY = imageHeight - 1 - pixelY;
+                image.setRGB(pixelX, flippedY, rgb);
             }
         }
 
-        return img;
+        return image;
     }
 
-    public void save(BufferedImage img, String filename) throws IOException {
-        Path out = Paths.get(filename);
-        Path parent = out.getParent();
-        if (parent != null) {
-            Files.createDirectories(parent);
+    public void save(BufferedImage image, String filename) throws IOException {
+        Path outputPath = Paths.get(filename);
+        Path parentDirectory = outputPath.getParent();
+        if (parentDirectory != null) {
+            Files.createDirectories(parentDirectory);
         }
-        ImageIO.write(img, "png", out.toFile());
-        System.out.println("Image écrite : " + out.toAbsolutePath());
+        ImageIO.write(image, "png", outputPath.toFile());
+        System.out.println("Image écrite : " + outputPath.toAbsolutePath());
     }
 }

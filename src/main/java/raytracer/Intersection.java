@@ -64,8 +64,8 @@ public final class Intersection {
             return new Color();
         }
 
-        Vector h = lightDir.add(eyeDir).normalized();
-        double cosNH = Math.max(0.0, h.dot(normal));
+        Vector halfwayVector = lightDir.add(eyeDir).normalized();
+        double cosNH = Math.max(0.0, halfwayVector.dot(normal));
 
         double shininess = shape.getShininess();
         if (shininess <= 0.0) {

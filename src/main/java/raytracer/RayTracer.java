@@ -8,52 +8,52 @@ import raytracer.math.Point;
 
 public final class RayTracer {
     private final Scene scene;
-    private final Orthonormal basis;
+    private final Orthonormal cameraBasis;
     private final double pixelWidth;
     private final double pixelHeight;
 
     public RayTracer(Scene scene) {
         this.scene = scene;
-        this.basis = new Orthonormal(scene.getCamera());
+        this.cameraBasis = new Orthonormal(scene.getCamera());
 
-        int width = scene.getWidth();
-        int height = scene.getHeight();
-        double fovRad = Math.toRadians(scene.getCamera().getFovDeg());
+        int imageWidth = scene.getWidth();
+        int imageHeight = scene.getHeight();
+        double fieldOfViewRadians = Math.toRadians(scene.getCamera().getFovDeg());
 
-        this.pixelHeight = 2.0 * Math.tan(fovRad / 2.0) / height;
-        this.pixelWidth = pixelHeight * height / width;
+        this.pixelHeight = 2.0 * Math.tan(fieldOfViewRadians / 2.0) / imageHeight;
+        this.pixelWidth = pixelHeight * imageHeight / imageWidth;
     }
 
     public Scene getScene() { return scene; }
 
-    public Color getPixelColor(int i, int j) {
-        Ray ray = computeRayForPixel(i, j);
-        Optional<Intersection> hitOpt = scene.findClosestIntersection(ray);
+    public Color getPixelColor(int pixelX, int pixelY) {
+        Ray rayThroughPixel = computeRayForPixel(pixelX, pixelY);
+        Optional<Intersection> closestIntersectionOpt = scene.findClosestIntersection(rayThroughPixel);
 
-        if (hitOpt.isPresent()) {
-            return scene.shade(hitOpt.get(), ray);
+        if (closestIntersectionOpt.isPresent()) {
+            return scene.shade(closestIntersectionOpt.get(), rayThroughPixel);
         } else {
             return new Color();
         }
     }
 
-    private Ray computeRayForPixel(int i, int j) {
-        int width = scene.getWidth();
-        int height = scene.getHeight();
+    private Ray computeRayForPixel(int pixelX, int pixelY) {
+        int imageWidth = scene.getWidth();
+        int imageHeight = scene.getHeight();
 
-        double a = pixelWidth  * (i - width  / 2.0 + 0.5);
-        double b = pixelHeight * (j - height / 2.0 + 0.5);
+        double screenX = pixelWidth  * (pixelX - imageWidth  / 2.0 + 0.5);
+        double screenY = pixelHeight * (pixelY - imageHeight / 2.0 + 0.5);
 
-        Vector u = basis.u();
-        Vector v = basis.v();
-        Vector w = basis.w();
+        Vector cameraRight  = cameraBasis.u();
+        Vector cameraUp     = cameraBasis.v();
+        Vector cameraForward = cameraBasis.w();
 
-        Vector dir = u.scale(a)
-                      .add(v.scale(b))
-                      .sub(w)
-                      .normalized();
+        Vector rayDirection = cameraRight.scale(screenX)
+                                         .add(cameraUp.scale(screenY))
+                                         .sub(cameraForward)
+                                         .normalized();
 
-        Point origin = scene.getCamera().getLookFrom();
-        return new Ray(origin, dir);
+        Point rayOrigin = scene.getCamera().getLookFrom();
+        return new Ray(rayOrigin, rayDirection);
     }
 }

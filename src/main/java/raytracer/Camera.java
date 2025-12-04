@@ -6,7 +6,7 @@ import raytracer.math.Vector;
 public final class Camera {
     public final Point lookFrom;
     public final Point lookAt;
-    public final Vector up;      // fourni dans le fichier (pas forcément normalisé)
+    public final Vector up;
     public final double fovDeg;
 
     public Camera(Point lookFrom, Point lookAt, Vector up, double fovDeg) {

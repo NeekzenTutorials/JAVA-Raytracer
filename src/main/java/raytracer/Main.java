@@ -10,12 +10,10 @@ public class Main {
             Scene scene;
 
             if (args.length > 0) {
-                // chemin externe
                 java.nio.file.Path p = java.nio.file.Path.of(args[0]);
                 scene = new SceneFileParser().parse(p);
             } else {
-                // scène embarquée dans resources
-                String resourcePath = "/jalon2/test6.scene";
+                String resourcePath = "/jalon5/tp55.test";
                 System.out.println("Lecture de la ressource: " + resourcePath);
                 try (InputStream in = Main.class.getResourceAsStream(resourcePath)) {
                     if (in == null) {

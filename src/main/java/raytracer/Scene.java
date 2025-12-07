@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import raytracer.math.Color;
-import raytracer.math.Point;
-import raytracer.math.Vector;
 import raytracer.light.AbstractLight;
 import raytracer.light.DirectionalLight;
 import raytracer.light.PointLight;
+import raytracer.math.Color;
+import raytracer.math.Point;
+import raytracer.math.Vector;
 import raytracer.shape.Shape;
 
+/**
+ * Scene container holding camera, output settings, ambient light, lights, and shapes.
+ * Provides closest-hit intersection search and shading routines.
+ */
 public final class Scene {
     private int width;
     private int height;
@@ -38,9 +42,17 @@ public final class Scene {
     public List<AbstractLight> getLights() { return lights; }
     public List<Shape> getShapes() { return shapes; }
 
+    /** Adds a light to the scene. */
     public void addLight(AbstractLight l) { lights.add(l); }
+    /** Adds a shape to the scene. */
     public void addShape(Shape s) { shapes.add(s); }
 
+    /**
+     * Finds the closest intersection of the given ray with any shape.
+     *
+     * @param ray ray to test
+     * @return optional closest hit, or empty if none
+     */
     public Optional<Intersection> findClosestIntersection(Ray ray) {
         Intersection closest = null;
 
@@ -56,6 +68,14 @@ public final class Scene {
         return Optional.ofNullable(closest);
     }
 
+    /**
+     * Computes shaded color at an intersection using ambient + Lambert + Blinn-Phong,
+     * skipping contributions from lights that are shadowed.
+     *
+     * @param isect   intersection data
+     * @param viewRay ray from camera to the hit
+     * @return shaded color
+     */
     public Color shade(Intersection isect, Ray viewRay) {
         Color result = ambient;
         Vector eyeDir = viewRay.direction().scale(-1.0).normalized();
@@ -74,6 +94,14 @@ public final class Scene {
         return result;
     }
 
+    /**
+     * Tests whether the intersection is shadowed with respect to a given light.
+     * Casts a shadow ray slightly offset along the surface normal to avoid self-intersection.
+     *
+     * @param isect intersection
+     * @param light light source
+     * @return true if a closer occluder exists along the light direction
+     */
     private boolean isInShadow(Intersection isect, AbstractLight light) {
         Vector lightDir;
         double maxT = Double.POSITIVE_INFINITY;

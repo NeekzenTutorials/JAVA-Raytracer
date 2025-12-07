@@ -1,11 +1,26 @@
 package imgcompare;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
+/**
+ * Command-line tool to compare two images and produce a diff PNG.
+ * Usage: java imgcompare.Main <image1> <image2> <imageDiffOut.png>
+ * Prints the number of differing pixels and writes the visual diff image.
+ */
 public class Main {
+    /**
+     * Entry point.
+     *
+     * @param args CLI arguments:
+     *             args[0] path to first image,
+     *             args[1] path to second image,
+     *             args[2] output path for the diff PNG.
+     * Exits with code 1 on invalid usage or IO errors.
+     */
     public static void main(String[] args) {
         if (args.length < 3) {
             System.err.println("Usage : java imgcompare.Main <image1> <image2> <imageDiffOut.png>");

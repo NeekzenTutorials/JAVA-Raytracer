@@ -7,17 +7,38 @@ import raytracer.Ray;
 import raytracer.math.Point;
 import raytracer.math.Vector;
 
+/**
+ * Triangle defined by three vertices a, b, c.
+ * Intersection uses the Möller–Trumbore algorithm and returns the closest valid hit.
+ */
 public final class Triangle extends Shape {
     private final Point a, b, c;
 
+    /**
+     * Constructs a triangle from three vertices.
+     *
+     * @param a first vertex
+     * @param b second vertex
+     * @param c third vertex
+     */
     public Triangle(Point a, Point b, Point c) {
         this.a = a; this.b = b; this.c = c;
     }
 
+    /** @return vertex a */
     public Point a() { return a; }
+    /** @return vertex b */
     public Point b() { return b; }
+    /** @return vertex c */
     public Point c() { return c; }
 
+    /**
+     * Intersects the triangle with a ray (Möller–Trumbore).
+     * Returns empty if outside barycentric bounds or behind the origin.
+     *
+     * @param ray ray to test
+     * @return closest valid intersection, if any
+     */
     @Override
     public Optional<Intersection> intersect(Ray ray) {
         Point origin = ray.origin();

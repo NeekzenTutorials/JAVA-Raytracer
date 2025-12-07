@@ -3,15 +3,23 @@ package raytracer;
 import java.util.Optional;
 
 import raytracer.math.Color;
-import raytracer.math.Vector;
 import raytracer.math.Point;
+import raytracer.math.Vector;
 
+/**
+ * Core ray tracing engine responsible for generating camera rays and shading pixels.
+ */
 public final class RayTracer {
     private final Scene scene;
     private final Orthonormal cameraBasis;
     private final double pixelWidth;
     private final double pixelHeight;
 
+    /**
+     * Initializes camera basis and pixel size from the scene's camera and image dimensions.
+     *
+     * @param scene scene to render
+     */
     public RayTracer(Scene scene) {
         this.scene = scene;
         this.cameraBasis = new Orthonormal(scene.getCamera());
@@ -24,8 +32,16 @@ public final class RayTracer {
         this.pixelWidth = pixelHeight * imageHeight / imageWidth;
     }
 
+    /** @return bound scene */
     public Scene getScene() { return scene; }
 
+    /**
+     * Computes the color for a given pixel by tracing a ray and shading the closest hit.
+     *
+     * @param pixelX pixel column (0..width-1)
+     * @param pixelY pixel row (0..height-1)
+     * @return pixel color
+     */
     public Color getPixelColor(int pixelX, int pixelY) {
         Ray rayThroughPixel = computeRayForPixel(pixelX, pixelY);
         Optional<Intersection> closestIntersectionOpt = scene.findClosestIntersection(rayThroughPixel);
@@ -37,6 +53,13 @@ public final class RayTracer {
         }
     }
 
+    /**
+     * Builds a primary ray through the pixel center using the camera basis and FOV.
+     *
+     * @param pixelX pixel column
+     * @param pixelY pixel row
+     * @return ray in world space
+     */
     private Ray computeRayForPixel(int pixelX, int pixelY) {
         int imageWidth = scene.getWidth();
         int imageHeight = scene.getHeight();

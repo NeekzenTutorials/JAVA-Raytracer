@@ -7,18 +7,37 @@ import raytracer.Ray;
 import raytracer.math.Point;
 import raytracer.math.Vector;
 
+/**
+ * Sphere defined by a center point and radius.
+ * Intersection uses quadratic solution and returns the closest positive hit.
+ */
 public final class Sphere extends Shape {
     private final Point center;
     private final double radius;
 
+    /**
+     * Constructs a sphere.
+     *
+     * @param center sphere center
+     * @param radius sphere radius (> 0)
+     */
     public Sphere(Point center, double radius) {
         this.center = center;
         this.radius = radius;
     }
 
+    /** @return sphere center */
     public Point center() { return center; }
+    /** @return sphere radius */
     public double radius() { return radius; }
 
+    /**
+     * Intersects the sphere with a ray.
+     * Returns empty if no real positive solution or intersections behind the origin.
+     *
+     * @param ray ray to test
+     * @return closest valid intersection, if any
+     */
     @Override
     public Optional<Intersection> intersect(Ray ray) {
         Point origin = ray.origin();

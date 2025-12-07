@@ -18,8 +18,22 @@ import raytracer.shape.Plane;
 import raytracer.shape.Sphere;
 import raytracer.shape.Triangle;
 
+/**
+ * Parser for the custom scene description format.
+ * Supported keywords: size, output, camera, ambient, diffuse, specular, shininess,
+ * directional, point, sphere, plane, maxverts, vertex, tri.
+ * Performs validations (e.g., positive sizes/radii, ambient+diffuse ≤ 1, lights sum ≤ 1).
+ * Throws SceneParseException on invalid input.
+ */
 public final class SceneFileParser {
 
+    /**
+     * Parses a scene file from disk.
+     *
+     * @param file path to the scene file
+     * @return populated Scene
+     * @throws SceneParseException if IO error or invalid content
+     */
     public Scene parse(Path file) {
         try (InputStream in = Files.newInputStream(file)) {
             return parse(in, file.toString());
@@ -28,6 +42,15 @@ public final class SceneFileParser {
         }
     }
 
+    /**
+     * Parses a scene from an InputStream.
+     * Requires at least "size" and "camera" to be present.
+     *
+     * @param in         input stream containing scene text (UTF-8)
+     * @param sourceName source name for error reporting
+     * @return populated Scene
+     * @throws SceneParseException on invalid syntax or semantic errors
+     */
     public Scene parse(InputStream in, String sourceName) {
         Locale.setDefault(Locale.ROOT);
         Scene scene = new Scene();
@@ -186,23 +209,42 @@ public final class SceneFileParser {
         return scene;
     }
 
+    /**
+     * Ensures the token array has the expected length.
+     *
+     * @param t        tokens
+     * @param expected expected token count
+     * @param lineNo   current line number for error messages
+     * @throws SceneParseException if insufficient arguments
+     */
     private static void requireArgs(String[] t, int expected, int lineNo) {
         if (t.length < expected) {
             throw err(lineNo, "Arguments insuffisants (attendu " + (expected - 1) + " après le mot-clé)");
         }
     }
 
+    /** Parses a double value from a token. */
     private static double d(String s) { return Double.parseDouble(s); }
 
+    /**
+     * Checks per-component that a + b ≤ 1 (with small tolerance).
+     */
     private static boolean leq1PerComponent(Color a, Color b) {
         return a.r() + b.r() <= 1.0 + 1e-12
             && a.g() + b.g() <= 1.0 + 1e-12
             && a.b() + b.b() <= 1.0 + 1e-12;
     }
 
+    /**
+     * Builds a formatted parsing exception with line number.
+     */
     private static SceneParseException err(int lineNo, String msg) {
         return new SceneParseException("Ligne " + lineNo + " : " + msg);
     }
+
+    /**
+     * Builds a formatted parsing exception with line number and cause.
+     */
     private static SceneParseException err(int lineNo, String msg, Throwable cause) {
         return new SceneParseException("Ligne " + lineNo + " : " + msg, cause);
     }

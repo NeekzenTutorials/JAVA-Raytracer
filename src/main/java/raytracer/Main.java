@@ -1,10 +1,20 @@
 package raytracer;
 
-import java.io.InputStream;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
+
 import raytracer.parsing.SceneFileParser;
 
+/**
+ * Entry point for the raytracer executable.
+ * Parses a scene file (from CLI path or bundled resource), renders, and saves the PNG.
+ */
 public class Main {
+    /**
+     * Main application entry. If no argument is provided, loads a default resource scene.
+     *
+     * @param args CLI arguments: [0] optional path to scene file
+     */
     public static void main(String[] args) {
         try {
             Scene scene;

@@ -1,109 +1,97 @@
 # JAVA-Raytracer
 
-## Overview
-A Java-based ray tracing engine supporting basic shapes (spheres, planes, triangles), lighting (directional and point lights), materials (diffuse and specular), and shadow computation.
+Moteur de lancer de rayons en Java : support des formes de base (sphère, plan, triangle), éclairages directionnels et ponctuels, matériaux diffus et spéculaires, ombres portées et rendu intégration-testé.
 
-## Building the Project
+## Sommaire
+- Présentation
+- Prérequis et installation (Java, Maven)
+- Cloner et compiler
+- Lancer les tests
+- Exécuter le raytracer
+- Comparer des images (outil `imgcompare`)
+- Arborescence utile
+- Dépannage rapide
 
-### Prerequisites
-- JDK 17 or later
-- Maven 3.8.9 or later
+## Présentation
+Le projet fournit :
+- Tracé de rayons avec sphères, plans et triangles
+- Éclairage Lambert + Blinn-Phong, ombres douces via décalage epsilon
+- Parser de scènes texte validant la cohérence des paramètres
+- Intégration testée de bout en bout (pipeline caméra → image)
 
-### Compile
-```bash
+## Prérequis et installation
+- JDK 17 ou plus récent
+- Maven 3.8.9 ou plus récent
+
+### Installer Java (Windows)
+1. Téléchargez un JDK 17 (Temurin ou Oracle) et installez-le.
+2. Ajoutez `JAVA_HOME` vers le dossier d’installation et ajoutez `%JAVA_HOME%\bin` au `PATH`.
+3. Vérifiez :
+```powershell
+java -version
+```
+
+### Installer Maven (Windows)
+1. Téléchargez l’archive sur https://maven.apache.org/download.cgi et décompressez-la (ex. `C:\dev\apache-maven-3.9.9`).
+2. Ajoutez `%MAVEN_HOME%\bin` au `PATH` (`MAVEN_HOME` pointant vers le dossier Maven).
+3. Vérifiez :
+```powershell
+mvn -v
+```
+
+## Compiler après extraction
+Après avoir extrait l’archive ZIP dans un dossier, ouvrez un terminal dans ce dossier puis lancez :
+```powershell
 mvn clean compile
 ```
 
-## Running Tests
-
-### Unit and Integration Tests
-The project includes a comprehensive test suite covering:
-- **Math operations**: Vector, Point, Color (add, subtract, normalize, dot, cross, etc.)
-- **Shapes**: Sphere, Plane, Triangle intersection tests
-- **Lighting**: Lambert diffuse and Blinn-Phong specular shading
-- **Parsing**: Scene file parser validation (required keywords, error handling)
-- **Integration**: Full render pipeline with camera and ambient lighting
-
-Run all tests:
-```bash
+## Lancer les tests
+Tests unitaires et d’intégration (math, formes, parser, pipeline de rendu) :
+```powershell
 mvn test
 ```
-
-Run a specific test class:
-```bash
+Exécuter un test précis :
+```powershell
 mvn test -Dtest=SphereTest
-mvn test -Dtest=PlaneTest
 mvn test -Dtest=RendererIntegrationTest
 ```
-
-View test coverage report:
-```bash
+Couverture (JaCoCo) :
+```powershell
 mvn clean test jacoco:report
 ```
-Coverage report will be available at `target/site/jacoco/index.html`
+Rapport : `target/site/jacoco/index.html`.
 
-## Test Summary
+## Exécuter le raytracer
+Lancement interactif (demande les chemins et paramètres) :
+```powershell
+mvn -Dexec.mainClass=raytracer.Main exec:java
+```
+Exemple de scènes fournies : `src/main/resources/jalon2/test1.scene` (et `test2.scene`, … `test7.scene`).
 
-**Total Tests**: 20 (all passing)
+## Comparer des images (outil `imgcompare`)
+Permet de comparer deux images (référence vs. rendu) :
+```powershell
+mvn -Dexec.mainClass=imgcompare.Main exec:java
+```
+Suivez les invites pour fournir les chemins des deux images.
 
-| Component | Tests | Notes |
-|-----------|-------|-------|
-| Color | 3 | Clamping, add, scale, Schur product, toRGB |
-| Point | 2 | Subtraction, vector operations |
-| Vector | 3 | Add/sub/scale, dot/cross, normalize |
-| Sphere | 2 | Center hit, miss detection |
-| Plane | 2 | Face hit, parallel miss |
-| Triangle | 2 | Center hit, outside miss |
-| Intersection | 2 | Lambert diffuse, Blinn-Phong specular |
-| SceneFileParser | 3 | Minimal parse, missing required keyword, invalid radius |
-| Renderer Integration | 1 | Image dimensions and pixel initialization |
-
-## Project Structure
-
+## Arborescence utile
 ```
 src/
   main/java/raytracer/
-    - RayTracer.java         (core ray tracing engine)
-    - Renderer.java          (renders scene to image)
-    - Scene.java             (scene management, shading)
-    - Ray.java               (ray definition)
-    - Intersection.java      (intersection data and shading)
-    - Camera.java            (camera definition)
-    - Orthonormal.java       (coordinate frame)
-    math/
-      - Point.java, Vector.java, Color.java, AbstractVec3.java
-    shape/
-      - Shape.java, Sphere.java, Plane.java, Triangle.java
-    light/
-      - AbstractLight.java, DirectionalLight.java, PointLight.java
-    parsing/
-      - SceneFileParser.java, SceneParseException.java
-  test/java/
-    - ColorTest.java, PointTest.java, VectorTest.java
-    - SphereTest.java, PlaneTest.java, TriangleTest.java
-    - IntersectionTest.java, SceneFileParserTest.java
-    - RendererIntegrationTest.java
+    RayTracer.java        (coeur du moteur)
+    Renderer.java         (rendu image)
+    Scene.java            (gestion scène, shading)
+    math/                 (Point, Vector, Color, AbstractVec3)
+    shape/                (Shape, Sphere, Plane, Triangle)
+    light/                (AbstractLight, DirectionalLight, PointLight)
+    parsing/              (SceneFileParser, SceneParseException)
+  main/java/imgcompare/   (outil de comparaison d’images)
+  resources/jalon2/*.scene (scènes d’exemple)
+  test/java/              (tests JUnit)
 ```
 
-## Example Scene File
-
-```
-size 800 600
-camera 0 1 3 0 0 -1 0 1 0 60
-ambient 0.2 0.2 0.2
-
-diffuse 0.8 0.2 0.2
-specular 0.5 0.5 0.5
-shininess 32
-sphere 0 0 -5 1.0
-
-directional -1 -1 -1 0.7 0.7 0.7
-output result.png
-```
-
-## Notes
-
-- The parser enforces validation: positive dimensions/radii, color sum constraints for lights
-- All vector/point operations are immutable
-- Ray tracing uses epsilon-based epsilon (1e-6) to avoid self-intersection
-- Shadow rays are offset along surface normal to prevent self-shadowing artifacts
+## Dépannage rapide
+- Maven ne trouve pas Java : vérifiez `java -version` et que `JAVA_HOME` et `PATH` pointent vers le JDK, pas un JRE.
+- Erreur de téléchargement Maven : vérifier le proxy ou réessayer plus tard (`mvn -U` pour forcer la mise à jour des dépendances).
+- Tests qui échouent : relisez la trace dans le terminal, repérez le test concerné, ajustez la scène ou le code selon le message.

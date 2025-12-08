@@ -23,7 +23,7 @@ public class Main {
                 java.nio.file.Path p = java.nio.file.Path.of(args[0]);
                 scene = new SceneFileParser().parse(p);
             } else {
-                String resourcePath = "/jalon5/tp55.test";
+                String resourcePath = "/final/final_avec_bonus.scene";
                 System.out.println("Lecture de la ressource: " + resourcePath);
                 try (InputStream in = Main.class.getResourceAsStream(resourcePath)) {
                     if (in == null) {
